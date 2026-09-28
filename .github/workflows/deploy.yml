@@ -1,50 +1,55 @@
-﻿name: Build And Deploy
+﻿name: 编译worldguard扩展flag加强版
 
 on:
+  #对应的是 UTC 时间，需要转换，0 代表北京时间8点，每个月4日/18日12点编译一次
+  #关闭则手动编译
+  workflow_dispatch:
+
   push:
-    branches: [ master ]
-  release:
-    types: [ created ]
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions: write-all
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 25
-      uses: actions/setup-java@v4
-      with:
-        java-version: '25'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-    - name: WorldGuardExtraFlagsPlus Jar
-      uses: actions/upload-artifact@v4
-      with:
-        name: WorldGuardExtraFlagsPlus Jar
-        path: "${{ github.workspace }}/Spigot/target/worldguard-extraflagsplus-*.jar"
-  
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 25
+	
+    - name: 设置JDK 25
       uses: actions/setup-java@v4
       with:
         java-version: '25'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
+		
+    - name: 使用Maven编译
       run: mvn -B package --file pom.xml
-    - name: Upload Release Asset
-      uses: softprops/action-gh-release@v1
+		
+    - name: 检测编译完的插件
+      run: |
+        mkdir -p ./upload
+        ls
+        cp -f Spigot/target/*.jar ./upload/
+        cd ./upload/
+        ls
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+
+    - name: 生成标签，上传固件 
+      uses: ncipollo/release-action@main
       with:
-        files: Spigot/target/worldguard-extraflagsplus-*.jar
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-
+        tag: worldguard-extraflagsplus
+        artifacts: ${{ env.FIRMWARE }}/*
+        allowUpdates: true
+        removeArtifacts: true
+        replacesArtifacts: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: |
+          ====================🧊插件信息🧊=======================
+          ➦ 📒 插件名称：worldguard-extraflagsplus
+          ➦ 💻 插件平台：Minecraft
+          ➦ ⚽ 插件源码：https://github.com/tinsware/WorldGuardExtraFlagsPlus 		
