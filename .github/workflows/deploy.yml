@@ -16,7 +16,6 @@ permissions: write-all
 
 jobs:
   build:
-    name: maven 编译
     runs-on: ubuntu-latest
 	
     steps:
