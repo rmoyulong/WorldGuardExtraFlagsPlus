@@ -17,10 +17,8 @@ permissions: write-all
 jobs:
   build:
     runs-on: ubuntu-latest
-	
     steps:
-	  - name: 检测系统
-	    uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 	  - name: 设置JDK 25
 	    uses: actions/setup-java@v4
 	    with:
