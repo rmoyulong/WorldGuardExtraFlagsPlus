@@ -24,7 +24,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
-      - name: 使用Maven编译
+      - name: Test
 	    run: mvn -B package --file pom.xml
         
       - name: 检测编译完的插件
