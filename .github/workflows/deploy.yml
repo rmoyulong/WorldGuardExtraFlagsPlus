@@ -24,11 +24,10 @@ jobs:
       with:
         java-version: '25'
         distribution: 'temurin'
-        cache: maven
-		
+        cache: maven		
     - name: 使用Maven编译
       run: mvn -B package --file pom.xml
-		
+	  
     - name: 检测编译完的插件
       run: |
         mkdir -p ./upload
